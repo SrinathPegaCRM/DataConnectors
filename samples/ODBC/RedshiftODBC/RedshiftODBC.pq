@@ -1,4 +1,5 @@
-﻿section RedshiftODBC;
+﻿[Version = "1.0.0"]
+section RedshiftODBC;
 
 // When set to true, additional trace information will be written out to the User log.
 // This should be set to false before release. Tracing is done through a call to
@@ -13,8 +14,8 @@ Config_SqlConformance = ODBC[SQL_SC][SQL_SC_SQL92_FULL];
 Config_DefaultUsernamePasswordHandling = true;
 // true, false, null
 Config_UseParameterBindings = true;
-// ex. { "\" }
-Config_StringLiterateEscapeCharacters = {"\"};
+// ex. { "'" } or { {"\", "\\"}, {"'", "\'"} }
+Config_StringLiteralEscapeCharacters  = { "'" };
 // true, false, null
 Config_UseCastInsteadOfConvert = true;
 // true, false
@@ -255,12 +256,12 @@ BuildOdbcConfig = () as record =>
             else
                 defaultConfig,
         withEscape =
-            if (Config_StringLiterateEscapeCharacters <> null) then
+            if (Config_StringLiteralEscapeCharacters <> null) then
                 let
                     caps = withParams[SqlCapabilities]
                         & [
                             SqlCapabilities = [
-                                StringLiteralEscapeCharacters = Config_StringLiterateEscapeCharacters
+                                StringLiteralEscapeCharacters = Config_StringLiteralEscapeCharacters
                             ]
                         ]
                 in

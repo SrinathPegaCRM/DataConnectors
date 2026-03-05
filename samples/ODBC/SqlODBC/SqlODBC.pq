@@ -11,8 +11,6 @@ section SqlODBC;
 // no-op and simply returns the original value.
 EnableTraceOutput = true;
 
-// TODO
-// add handling for SSL
 /****************************
  * ODBC Driver Configuration
  ****************************/
@@ -103,8 +101,8 @@ Config_UseParameterBindings = null;
 //
 // Set to null to determine the value from the driver.
 //
-Config_StringLiterateEscapeCharacters = {"\"};
-// ex. { "\" }
+Config_StringLiteralEscapeCharacters  = { "'" }; // ex. { "'" } or { {"\", "\\"}, {"'", "\'"} }
+
 // Override this if the driver expects the use of CAST instead of CONVERT.
 // By default, the query will be generated using ANSI SQL CONVERT syntax.
 //
@@ -364,10 +362,10 @@ BuildOdbcConfig = () as record =>
             else
                 defaultConfig,
         withEscape =
-            if (Config_StringLiterateEscapeCharacters <> null) then
+            if (Config_StringLiteralEscapeCharacters <> null) then
                 let
                     caps = [
-                        StringLiteralEscapeCharacters = Config_StringLiterateEscapeCharacters
+                        StringLiteralEscapeCharacters = Config_StringLiteralEscapeCharacters
                     ]
                 in
                     Merge(withParams, caps)

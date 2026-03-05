@@ -18,8 +18,8 @@ Config_SqlConformance = SQL_SC[SQL_SC_SQL92_FULL];
 Config_DefaultUsernamePasswordHandling = true;
 // true, false, null
 Config_UseParameterBindings = false;
-// ex. { "\" }
-Config_StringLiterateEscapeCharacters = {"\"};
+// ex. { "'" } or { {"\", "\\"}, {"'", "\'"} }
+Config_StringLiteralEscapeCharacters = { {"\", "\\"}, {"'", "\'"} };
 // true, false, null
 Config_UseCastInsteadOfConvert = null;
 // true, false
@@ -179,7 +179,6 @@ shared HiveSample.Contents = (host as text, port as number) =>
                 CreateNavigationProperties = true,
                 // These values should be set by previous steps
                 CredentialConnectionString = CredentialConnectionString,
-                AstVisitor = AstVisitor,
                 SqlCapabilities = SqlCapabilities,
                 SQLColumns = SQLColumns,
                 SQLGetInfo = SQLGetInfo,
@@ -270,12 +269,12 @@ BuildOdbcConfig = () as record =>
             else
                 defaultConfig,
         withEscape =
-            if (Config_StringLiterateEscapeCharacters <> null) then
+            if (Config_StringLiteralEscapeCharacters <> null) then
                 let
                     caps = withParams[SqlCapabilities]
                         & [
                             SqlCapabilities = [
-                                StringLiteralEscapeCharacters = Config_StringLiterateEscapeCharacters
+                                StringLiteralEscapeCharacters = Config_StringLiteralEscapeCharacters
                             ]
                         ]
                 in
@@ -334,8 +333,7 @@ Diagnostics = Extension.LoadFunction("Diagnostics.pqm");
 
 Diagnostics.LogValue = if (EnableTraceOutput) then Diagnostics[LogValue] else (prefix, value) => value;
 
-// OdbcConstants contains numeric constants from the ODBC header files, and a
-// helper function to create bitfield values.
+// OdbcConstants contains numeric constants from the ODBC header files, and a helper function to create bitfield values.
 ODBC = Extension.LoadFunction("OdbcConstants.pqm");
 
 // Expose the constants and bitfield helpers
